@@ -1,91 +1,92 @@
 $(document).ready(function() {
+    // Cargar usuarios al cargar la página
+    loadUsers();
+
     function loadUsers() {
         $.ajax({
-            url: 'php/fetch_users.php',
-            method: 'GET',
+            url: "php/fetch_users.php",
+            method: "GET",
             success: function(data) {
-                $('#user-table-body').html(data);
+                $("#userTable tbody").html(data);
             }
         });
     }
 
-    loadUsers();
+    // Mostrar modal para crear/editar usuario
+    $('#userModal').on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget);
+        var userId = button.data('id');
+        var modal = $(this);
 
-    $('#add-user-btn').click(function() {
-        $('#userModalLabel').text('Crear Usuario');
-        $('#user-form')[0].reset();
-        $('#user-id').val('');
-        $('#userModal').modal('show');
-    });
-
-    $(document).on('click', '.edit-btn', function() {
-        const id = $(this).data('id');
-        $.ajax({
-            url: 'php/fetch_user.php',
-            method: 'GET',
-            data: { id: id },
-            dataType: 'json',
-            success: function(user) {
-                $('#userModalLabel').text('Editar Usuario');
-                $('#user-id').val(user.id);
-                $('#nombre_rs').val(user.nombre_rs);
-                $('#dni').val(user.dni);
-                $('#ruc').val(user.ruc);
-                $('#correo').val(user.correo);
-                $('#celular').val(user.celular);
-                $('#rol').val(user.rol);
-                $('#user').val(user.user);
-                $('#userModal').modal('show');
-            }
-        });
-    });
-
-    $(document).on('click', '.delete-btn', function() {
-        const id = $(this).data('id');
-        Swal.fire({
-            title: '¿Estás seguro?',
-            text: "¡Esta acción no se puede deshacer!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sí, eliminarlo'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: 'php/delete_user.php',
-                    method: 'POST',
-                    data: { id: id },
-                    success: function(response) {
-                        const result = JSON.parse(response);
-                        if (result.success) {
-                            Swal.fire('¡Eliminado!', 'El usuario ha sido eliminado.', 'success');
-                            loadUsers();
-                        } else {
-                            Swal.fire('Error', 'No se pudo eliminar el usuario.', 'error');
-                        }
-                    }
-                });
-            }
-        });
-    });
-
-    $('#user-form').submit(function(e) {
-        e.preventDefault();
-        $.ajax({
-            url: 'php/add_edit_user.php',
-            method: 'POST',
-            data: $(this).serialize(),
-            success: function(response) {
-                const result = JSON.parse(response);
-                if (result.success) {
-                    $('#userModal').modal('hide');
-                    Swal.fire('Éxito', 'Usuario guardado exitosamente.', 'success');
-                    loadUsers();
-                } else {
-                    Swal.fire('Error', 'No se pudo guardar el usuario.', 'error');
+        if (userId) {
+            // Editar usuario
+            $.ajax({
+                url: "php/fetch_user.php",
+                method: "GET",
+                data: { id: userId },
+                dataType: "json",
+                success: function(data) {
+                    modal.find('.modal-title').text('Editar Usuario');
+                    modal.find('#userId').val(data.id);
+                    modal.find('#nombre_rs').val(data.nombre_rs);
+                    modal.find('#dni').val(data.dni);
+                    modal.find('#ruc').val(data.ruc);
+                    modal.find('#correo').val(data.correo);
+                    modal.find('#celular').val(data.celular);
+                    modal.find('#rol').val(data.rol);
+                    modal.find('#user').val(data.user);
+                    modal.find('#existing_cv').val(data.cv);
+                    modal.find('#cv').val(null); // No resetear el campo de CV
+                },
+                error: function() {
+                    alert('Error al cargar los datos del usuario.');
                 }
+            });
+        } else {
+            // Crear nuevo usuario
+            modal.find('.modal-title').text('Crear Usuario');
+            modal.find('form')[0].reset();
+            modal.find('#userId').val('');
+            modal.find('#existing_cv').val('');
+            modal.find('#cv').val(null);
+        }
+    });
+
+    // Guardar o actualizar usuario
+    $("#userForm").submit(function(e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+        $.ajax({
+            url: "php/add_edit_user.php",
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                $('#userModal').modal('hide');
+                loadUsers();
+            },
+            error: function() {
+                alert('Error al guardar los datos del usuario.');
             }
         });
+    });
+
+    // Eliminar usuario
+    $(document).on('click', '.delete-btn', function() {
+        if (confirm('¿Estás seguro de que quieres eliminar este usuario?')) {
+            var userId = $(this).data('id');
+            $.ajax({
+                url: "php/delete_user.php",
+                method: "POST",
+                data: { id: userId },
+                success: function(response) {
+                    loadUsers();
+                },
+                error: function() {
+                    alert('Error al eliminar el usuario.');
+                }
+            });
+        }
     });
 });

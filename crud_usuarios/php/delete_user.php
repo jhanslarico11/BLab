@@ -7,12 +7,12 @@ if (isset($_POST['id'])) {
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id);
     if ($stmt->execute()) {
-        echo json_encode(['success' => true]);
+        echo "Usuario eliminado correctamente.";
     } else {
-        echo json_encode(['success' => false, 'error' => $stmt->error]);
+        echo "Error: " . $stmt->error;
     }
-    $stmt->close();
-}
 
-$conn->close();
+    $stmt->close();
+    $conn->close();
+}
 ?>

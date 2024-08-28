@@ -10,6 +10,8 @@ if (isset($_GET['id'])) {
     $result = $stmt->get_result();
     $user = $result->fetch_assoc();
     echo json_encode($user);
+} else {
+    echo json_encode(["error" => "ID no proporcionado"]);
 }
 
 $conn->close();

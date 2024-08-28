@@ -15,14 +15,15 @@ if ($result->num_rows > 0) {
             <td>{$row['celular']}</td>
             <td>{$row['rol']}</td>
             <td>{$row['user']}</td>
+            <td><a href='{$row['cv']}' target='_blank'>Ver CV</a></td>
             <td>
-                <button class='btn btn-warning btn-sm edit-btn' data-id='{$row['id']}'>Editar</button>
+                <button class='btn btn-warning btn-sm edit-btn' data-id='{$row['id']}' data-toggle='modal' data-target='#userModal'>Editar</button>
                 <button class='btn btn-danger btn-sm delete-btn' data-id='{$row['id']}'>Eliminar</button>
             </td>
         </tr>";
     }
 } else {
-    echo "<tr><td colspan='9'>No hay usuarios registrados.</td></tr>";
+    echo "<tr><td colspan='10'>No hay usuarios registrados.</td></tr>";
 }
 
 $conn->close();

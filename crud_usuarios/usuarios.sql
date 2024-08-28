@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 27-08-2024 a las 15:40:25
+-- Tiempo de generación: 28-08-2024 a las 01:17:38
 -- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.0.30
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `bl`
+-- Base de datos: `bolsa_laboral`
 --
 
 -- --------------------------------------------------------
@@ -30,15 +30,14 @@ SET time_zone = "+00:00";
 CREATE TABLE `usuarios` (
   `id` int(11) NOT NULL,
   `nombre_rs` varchar(255) NOT NULL,
-  `dni` varchar(20) NOT NULL,
-  `ruc` varchar(20) NOT NULL,
+  `dni` varchar(20) DEFAULT NULL,
+  `ruc` varchar(20) DEFAULT NULL,
   `correo` varchar(255) NOT NULL,
-  `celular` varchar(20) NOT NULL,
+  `celular` varchar(20) DEFAULT NULL,
   `rol` enum('admin','empresa','postulante','supervisor') NOT NULL,
-  `user` varchar(50) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `archivo_cv` blob DEFAULT NULL,
-  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp()
+  `user` varchar(255) NOT NULL,
+  `cv` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -49,9 +48,7 @@ CREATE TABLE `usuarios` (
 -- Indices de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `correo` (`correo`),
-  ADD UNIQUE KEY `user` (`user`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
